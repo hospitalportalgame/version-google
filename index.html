@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101d30"><meta name="description" content="Hospital Portal: RPG médico narrativo de simulación clínica en hepatología.">
+<title>HOSPITAL PORTAL · Simulación Clínica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/juego.css?v=74"></head><body>
+
+<div id="hp-boot-splash" class="hp-boot-splash" role="dialog" aria-label="Presentación de KIDF GAMES" hidden>
+  <video class="hp-boot-video" id="hp-boot-video" muted playsinline preload="auto" poster="assets/kidf-intro-pixelart.png" aria-hidden="true">
+    <source src="assets/kidf-intro-pixelart.webm" type="video/webm">
+  </video>
+  <span class="hp-boot-skip">Clic o tecla para omitir</span>
+</div>
+
+<div class="hp-home" id="hp-home">
+  <main class="screen">
+    <section class="content">
+      <div class="eyebrow">UNA HISTORIA DE DECISIONES</div>
+      <h1>HOSPITAL<span>PORTAL</span></h1>
+      <p class="subtitle">Cada decisión cuenta.</p>
+      <nav class="title-menu" aria-label="Menú principal">
+      <a class="start-button" href="#jugar" id="hp-start"><span class="play-icon" aria-hidden="true">▸</span><span id="hp-start-label">NUEVA PARTIDA</span></a>
+      <button class="new-game-button" type="button" id="hp-new" hidden><span aria-hidden="true">＋</span> Nueva partida</button>
+      </nav>
+      <p class="save-info" id="hp-save-info">DÍA 1 · 2 PACIENTES EN AGENDA</p>
+      <dialog id="hp-new-dialog" class="new-game-dialog" aria-labelledby="hp-reset-title">
+        <h2 id="hp-reset-title">¿Reiniciar el Día 1?</h2>
+        <p>La nueva partida reemplazará el progreso guardado de la campaña. Puedes exportar tu partida desde la agenda del consultorio antes de comenzar de nuevo.</p>
+        <div class="new-game-actions">
+          <button type="button" id="hp-cancel-new">CANCELAR</button>
+          <button type="button" class="primary-action" id="hp-confirm-new">REINICIAR DÍA 1</button>
+        </div>
+      </dialog>
+      <p class="hp-local-note">↑ ↓ Seleccionar · Enter Confirmar</p>
+    </section>
+    <footer class="footer"><span>DEMOSTRACIÓN · RPG MÉDICO NARRATIVO</span><span>UN JUEGO DE KEIVIN DUQUE <i>·</i> © 2026</span></footer>
+  </main>
+</div>
+<div id="hp-day1" class="hp-day1-view" hidden>
+<div class="app-shell">
+<header aria-label="Navegación del consultorio" class="game-header">
+<a aria-label="Hospital Portal, inicio" class="brand" href="#"><span class="brand-icon">✚</span><span>HOSPITAL PORTAL<span class="brand-sub">CONSULTORIO · DÍA 1</span></span></a>
+<nav aria-label="Tu espacio" class="header-nav"><button aria-label="Consultorio" class="nav-item active" id="room-nav"><span class="nav-icon">▣</span><span>Consultorio</span></button><button aria-label="Plano del consultorio" class="nav-item" id="map-nav"><span class="nav-icon">⌘</span><span>Plano</span></button></nav>
+<div class="header-end"><button class="hp-menu-return" id="hp-menu-return" type="button">← Menú principal</button><span class="private-note"><span class="tiny-dot"></span> SIN CONEXIÓN</span><span class="build-tag">DÍA 1</span><button aria-haspopup="dialog" class="restart-game-button" id="restart-game-btn"><span aria-hidden="true">↺</span> Reiniciar todo</button><button class="text-button" id="help-nav">Cómo jugar</button><button aria-label="Cómo jugar" class="icon-button" id="help-top">?</button></div>
+</header>
+<main>
+<div class="page-content">
+<h1 class="sr-only">Hospital Portal · Simulación clínica de hepatología</h1>
+<div class="workspace">
+<section aria-label="Consultorio interactivo" class="play-column">
+<div class="room-card">
+<div class="room-toolbar"><div><span class="room-symbol">▣</span><b>Consultorio 01</b><span class="room-small">HEPATOLOGÍA</span></div><div class="room-tools"><span id="player-status"><i></i> Explorando</span><button aria-expanded="false" aria-label="Ampliar el consultorio a pantalla completa" class="icon-button" id="expand-btn" title="Pantalla completa"><svg aria-hidden="true" height="16" shape-rendering="crispEdges" viewbox="0 0 16 16" width="16"><path d="M6 2H2V6M10 2H14V6M2 10V14H6M10 14H14V10" fill="none" stroke="currentColor" stroke-width="2"></path></svg></button><button aria-label="Pausar juego" class="icon-button" id="pause-btn">Ⅱ</button></div></div>
+<div aria-label="Opciones del consultorio" class="room-preferences"><button aria-label="Acelerar los traslados a velocidad triple" aria-pressed="false" class="preference-button" id="speed-btn" title="Velocidad de los recorridos automáticos">Traslados: 1×</button><button aria-label="Activar sonidos del consultorio" aria-pressed="false" class="preference-button" id="sound-btn" title="Pasos, silla y papel">Sonido: apagado</button><span class="room-version">v0.19</span></div>
+<div class="stage"><canvas aria-label="Consultorio pixel art. Muévete con WASD o flechas, pulsa E para interactuar. También puedes hacer clic en el suelo y en los objetos." height="512" id="world" tabindex="0" width="768">Tu navegador necesita soporte de canvas para mostrar el consultorio.</canvas><button class="secondary-button" hidden="" id="collapse-btn">Volver · Esc</button><div hidden="" id="pause-overlay"><span>Turno en pausa</span><button class="primary-button" id="resume-btn">Continuar</button></div></div>
+<div class="interaction-bar"><div class="interaction-copy"><span class="key-chip">E</span><div><b id="context-title">Explora el consultorio</b><span id="context-subtitle">Acércate al paciente o haz clic sobre él.</span></div></div><button class="primary-button" id="interact-btn">Interactuar <span>↵</span></button></div>
+</div>
+<div class="control-row"><div class="keyboard-hint"><span class="key-group"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>o flechas para moverte</span><span class="control-separator"></span><kbd>E</kbd><span>interactuar</span><span class="control-separator"></span><span>↖ Clic para caminar</span></div><button class="text-button" id="controls-btn">Controles</button></div>
+<div aria-label="Controles táctiles" class="touch-controls"><div class="hp-joy-base" id="consult-joystick" role="application" aria-label="Joystick analógico de movimiento"><div class="hp-joy-ring"></div><div class="hp-joy-ticks"><span class="t-n" data-t="n"></span><span class="t-s" data-t="s"></span><span class="t-w" data-t="w"></span><span class="t-e" data-t="e"></span></div><div class="hp-joy-knob"></div></div><button class="hp-action-orb" id="touch-interact" aria-label="E · Interactuar"><span>E</span><small>USAR</small></button></div>
+</section>
+<aside aria-label="Historia y progreso de la consulta" class="journal">
+<div class="journal-heading"><span class="eyebrow">CUADERNO DE CONSULTAS</span><span>▤</span></div>
+<section class="round-card"><div class="progress-heading"><h3>Ronda del consultorio</h3><span id="round-count">0/2</span></div><div class="progress-track"><span id="round-fill"></span></div><button class="secondary-button full" id="agenda-btn">Ver agenda y devoluciones <span>↗</span></button></section>
+<div class="mission-card"><div class="mission-icon">✦</div><div><p class="eyebrow">TU OBJETIVO</p><b id="objective">Conoce a Martín y decide qué preguntar.</b><p id="objective-detail">Haz clic en el paciente para acercarte. Pulsa E para conversar.</p></div><span class="mission-step" id="mission-step">01 / 05</span></div>
+<section class="patient-card"><div class="patient-heading"><svg aria-hidden="true" class="patient-portrait" id="patient-portrait" shape-rendering="crispEdges" viewbox="0 0 32 32"><path d="M0 0h32v32H0z" fill="#e4dcc5"></path><path d="M7 24h18v8H7z" fill="#4d6d80"></path><path d="M11 9h11v15H11z" fill="#cf9b77"></path><path d="M10 6h13v7H10zM10 11h3v7h-3zM21 11h2v7h-2z" fill="#59483b"></path><path d="M14 15h2v2h-2zM19 15h2v2h-2z" fill="#294337"></path></svg><div><h2 id="patient-name">Martín</h2><p id="patient-details">46 años · Conductor</p></div></div><span class="stable-badge"><span class="tiny-dot"></span> Paciente estable</span><div class="case-intro"><span id="case-number">CASO 01 / 02</span><h3 id="case-name">Derivación por un chequeo</h3><p id="case-description">Consulta ambulatoria · evaluación por realizar</p><small class="difficulty-badge" id="case-difficulty">COMPLEJIDAD 1 / 5</small></div><button class="secondary-button full" id="history-btn">Conversar con el paciente <span>↗</span></button><button class="secondary-button full" id="exam-btn">Hacer examen físico</button></section>
+<section class="progress-card"><div class="progress-heading"><h3>Siguiente paso</h3><span id="progress-count">0/5</span></div><div class="progress-track"><span id="progress-fill"></span></div><ol id="checklist"><li data-task="history"><span class="check-circle">1</span><div>Conocer al paciente<small>Preguntas y antecedentes</small></div></li><li data-task="exam"><span class="check-circle">2</span><div>Examinar en la camilla<small>Acompaña al paciente</small></div></li><li data-task="orders"><span class="check-circle">3</span><div>Elegir estudios<small>Un clic por tarjeta</small></div></li><li data-task="results"><span class="check-circle">4</span><div>Mirar los resultados<small><span id="risk-step-detail">Datos solicitados</span></small></div></li><li data-task="outcome"><span class="check-circle">5</span><div>Resolver la consulta<small>Diagnóstico, conducta y control</small></div></li></ol><button class="secondary-button full" id="desk-btn">Ir al escritorio <span>→</span></button><button class="secondary-button full" hidden="" id="return-visit-btn">Control de Martín · opcional →</button><button class="primary-button full" hidden="" id="next-patient-btn">Continuar con otro paciente →</button></section>
+<section class="resident-card"><span class="resident-icon">✚</span><div><b>Tú eres la residente</b><p>Pregunta, investiga y decide.</p></div><button aria-label="Reiniciar la consulta" class="icon-button" id="reset-btn">↺</button></section>
+</aside>
+</div>
+<footer><span>Turno de hepatología <i>·</i> Consultorio 01</span><span>Simulación educativa · Pacientes ficticios</span></footer>
+</div>
+</main>
+</div>
+<div aria-live="polite" id="toast" role="status"></div>
+<dialog aria-labelledby="panel-title" id="panel"><div class="panel-shell"><header class="panel-heading"><div><p class="eyebrow" id="panel-kicker"></p><h2 id="panel-title"></h2></div><button aria-label="Cerrar ventana" class="icon-button" id="close-panel">×</button></header><div id="panel-body"></div></div></dialog>
+<input accept="application/json,.json" aria-label="Seleccionar una partida de Hepato" hidden="" id="load-game-file" type="file"/>
+</div>
+<script src="src/sistemas/inicio-y-guardado.js"></script>
+<script src="src/motor/registro-compartido.js"></script>
+<script src="src/motor/movimiento-colisiones.js"></script>
+<script src="src/motor/configuracion.js"></script>
+<script src="src/motor/vendor/tween.umd.js"></script>
+<script src="src/motor/vendor/sortable.min.js"></script>
+<script src="src/graficos/arte-personajes.js"></script>
+<script src="src/sistemas/examen-fisico.js"></script>
+<script src="src/sistemas/visitas.js"></script>
+<script src="src/graficos/pixel-art.js"></script>
+<script src="src/graficos/arte-consultorio.js"></script>
+<script src="src/graficos/sprites-personajes.js"></script>
+<script src="src/graficos/camilla.js"></script>
+<script src="src/graficos/mascaras-muebles.js"></script>
+<script src="src/graficos/renderizador.js"></script>
+<script src="src/sistemas/sonido-ambiente.js"></script>
+<script src="src/motor/cerrar-registro.js"></script>
+<script src="src/jornadas/dia1/registro.js"></script>
+<script src="src/sistemas/minijuego-examen-abdomen.js"></script>
+<script src="src/sistemas/minijuego-examen-clinico.js"></script>
+<script src="src/clinica/dia1/caso-inicial.js"></script>
+<script src="src/clinica/dia1/catalogo-estudios.js"></script>
+<script src="src/clinica/dia1/casos.js"></script>
+<script src="src/clinica/dia1/simulaciones.js"></script>
+<script src="src/clinica/dia1/opciones-decision.js"></script>
+<script src="src/clinica/dia1/razonamiento.js"></script>
+<script src="src/clinica/dia1/razonamiento-martin.js"></script>
+<script src="src/clinica/dia1/razonamiento-sofia.js"></script>
+<script src="src/clinica/dia1/razonamiento-elena.js"></script>
+<script src="src/clinica/dia1/razonamiento-diego.js"></script>
+<script src="src/clinica/dia1/razonamiento-rosa.js"></script>
+<script src="src/clinica/dia1/razonamiento-andres.js"></script>
+<script src="src/clinica/dia1/razonamiento-lucia.js"></script>
+<script src="src/clinica/dia1/razonamiento-ernesto.js"></script>
+<script src="src/clinica/dia1/razonamiento-valeria.js"></script>
+<script src="src/clinica/dia1/razonamiento-hector.js"></script>
+<script src="src/clinica/dia1/desafios.js"></script>
+<script src="src/clinica/dia1/economia.js"></script>
+<script src="src/clinica/dia1/reconsultas.js"></script>
+<script src="src/clinica/dia1/consulta.js"></script>
+<script src="src/clinica/dia1/dialogos.js"></script>
+<script src="src/clinica/dia1/pistas-investigacion.js"></script>
+<script src="src/jornadas/dia1/interfaz-reconsultas.js"></script>
+<script src="src/clinica/dia1/retroalimentacion-docente.js"></script>
+<script src="src/jornadas/dia1/interfaz-clinica.js"></script>
+<script src="src/jornadas/dia1/campana.js"></script>
+<script src="src/sistemas/guardado-dia1.js"></script>
+<script src="src/sistemas/pasillo-hospital.js"></script>
+<script src="src/sistemas/pasillo-consultorios.js"></script>
+<script src="src/graficos/efectos-ambientales.js"></script>
+<script src="src/sistemas/gerencia-hospital.js"></script>
+<script src="src/sistemas/llegada-hospital.js"></script>
+<script src="src/jornadas/dia1/juego.js"></script>
+<script src="src/jornadas/dia1/menu-y-navegacion.js"></script>
+
+<!-- INTRO CINEMATOGRÁFICA HOSPITAL PORTAL -->
+<div id="hp-intro" class="hp-intro-overlay" style="display:none;">
+  <video id="hp-intro-video"
+    class="hp-intro-video"
+    src="assets/intro-hospital.mp4"
+    preload="none"
+    playsinline>
+  </video>
+  <div id="hp-intro-caption" class="intro-caption intro-caption-centered" aria-live="polite">
+    <p id="hp-intro-caption-text"></p>
+  </div>
+
+  <button id="hp-intro-play" class="hp-intro-play-btn" type="button">▶ Reproducir introducción</button>
+
+  <button id="hp-intro-skip" class="hp-intro-skip-btn" type="button">OMITIR INTRO ›</button>
+</div>
+
+
+<script>
+(() => {
+  const intro = document.getElementById("hp-intro");
+  const video = document.getElementById("hp-intro-video");
+  const play = document.getElementById("hp-intro-play");
+  const skip = document.getElementById("hp-intro-skip");
+  const caption=document.getElementById('hp-intro-caption');
+  const captionText=document.getElementById('hp-intro-caption-text');
+  let introPhase='opening',introTime=0,lastIntroFrame=0,introFrame=0;
+  function introCaption(text,centered){
+    if(captionText.textContent!==text)captionText.textContent=text;
+    caption.classList.toggle('intro-caption-centered',centered);
+  }
+  function startVideo(){
+    video.play().then(()=>{if(!reproduciendo)video.pause();play.style.display='none';}).catch(()=>{if(reproduciendo)play.style.display='block';});
+  }
+  function animateIntro(now){
+    if(!reproduciendo)return;
+    const dt=lastIntroFrame?Math.min(.1,(now-lastIntroFrame)/1000):0;
+    lastIntroFrame=now;
+    if(!document.hidden)introTime+=dt;
+    if(introPhase==='opening'){
+      video.style.opacity='0';
+      introCaption('Tu primer día en el Hospital Portal.',true);
+      caption.style.opacity=String(Math.min(1,introTime/.7,Math.max(0,(4-introTime)/.7)));
+      if(introTime>=4){introPhase='video';introTime=0;startVideo();}
+    }else if(introPhase==='video'){
+      const duration=Number.isFinite(video.duration)?video.duration:10;
+      const t=video.currentTime;
+      video.style.opacity=String(Math.min(1,t/.8));
+      introCaption(t<duration*.48
+        ?'Comienzas una nueva etapa como médica residente en el Hospital Portal.'
+        :'Cada paciente llega con síntomas, preguntas… y una historia que todavía está escribiéndose.',false);
+      caption.style.opacity=String(Math.min(1,t/.7));
+    }else{
+      video.style.opacity=String(Math.max(0,1-introTime/.8));
+      introCaption('Escucha. Observa. Decide.\nCada decisión cuenta.',true);
+      caption.style.opacity=String(Math.min(1,introTime/.8,Math.max(0,(5.5-introTime)/.8)));
+      if(introTime>=5.5){terminarIntro();return;}
+    }
+    introFrame=requestAnimationFrame(animateIntro);
+  }
+
+  let botonOriginal = null;
+  let reproduciendo = false;
+  let permitirNavegacion = false;
+
+  function terminarIntro() {
+    if (!reproduciendo) return;
+
+    reproduciendo = false;
+    cancelAnimationFrame(introFrame);
+    video.pause();
+    document.body.classList.remove('hp-intro-active');
+    intro.style.display = "none";
+
+    const boton = botonOriginal;
+    botonOriginal = null;
+
+    if (boton) {
+      permitirNavegacion = true;
+      try {
+        boton.click();
+      } finally {
+        permitirNavegacion = false;
+      }
+    }
+  }
+
+  function reproducirIntro() {
+    intro.style.display = "flex";
+    document.body.classList.add('hp-intro-active');
+    play.style.display = "none";
+    video.currentTime = 0;
+    introPhase='opening';introTime=0;lastIntroFrame=0;
+    video.style.opacity='0';caption.style.opacity='0';
+    try{video.muted=JSON.parse(localStorage.getItem('hospital-portal-solo-dia1-v1')||'null')?.settings?.sound===false;}catch{}
+    // Solicitar permiso de reproducción dentro del gesto inicial del jugador.
+    video.play().then(()=>{if(introPhase==='opening')video.pause();}).catch(()=>{});
+    skip.focus();
+    introFrame=requestAnimationFrame(animateIntro);
+  }
+
+  // Detectar el botón por su texto visible.
+  document.addEventListener("click", (evento) => {
+    if (permitirNavegacion || reproduciendo) return;
+
+    const boton = evento.target.closest("a, button");
+    if (!boton) return;
+
+    // Usar el identificador estable y reproducir solo en una partida nueva.
+    const esInicio = boton.id === "hp-start" && boton.dataset.newGame === "true";
+
+    // El reinicio también inicia una partida nueva; se ejecuta al terminar el video.
+    const esReinicio = boton.id === "hp-confirm-new";
+    if (!esInicio && !esReinicio) return;
+
+    evento.preventDefault();
+    evento.stopImmediatePropagation();
+
+    if (esReinicio) document.getElementById("hp-new-dialog").close();
+    botonOriginal = boton;
+    reproduciendo = true;
+
+    reproducirIntro();
+  }, true);
+
+  play.addEventListener("click", () => {
+    if (reproduciendo) startVideo();
+  });
+
+  skip.addEventListener("click", terminarIntro);
+  video.addEventListener("ended",()=>{if(reproduciendo){introPhase='closing';introTime=0;}});
+  video.addEventListener('error',()=>{if(reproduciendo){introPhase='closing';introTime=0;}});
+  document.addEventListener('visibilitychange',()=>{
+    if(!reproduciendo)return;
+    if(document.hidden)video.pause();
+    else if(introPhase==='video')startVideo();
+  });
+})();
+</script>
+
+
+<script>
+(() => {
+  const splash = document.getElementById('hp-boot-splash');
+  if (!splash) return;
+  const skipBoot = location.hash === '#jugar' || sessionStorage.getItem('hp_boot_splash_done') === '1';
+  if (skipBoot) return;
+  splash.hidden = false;
+  let closed = false;
+  let chimePlayed = false;
+  const soundEnabled = (() => {
+    try { return JSON.parse(localStorage.getItem('hospital-portal-solo-dia1-v1') || 'null')?.settings?.sound !== false; }
+    catch { return true; }
+  })();
+  const playBrandCoinChime = (fromGesture = false) => {
+    if (chimePlayed || !soundEnabled) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    try {
+      const ctx = new AC();
+      const triggerNotes = () => {
+        if (chimePlayed || ctx.state !== 'running') return;
+        chimePlayed = true;
+        const now = ctx.currentTime;
+        const notes = [
+          { freq: 987.77, start: 0, dur: 0.09, gain: 0.16 },
+          { freq: 1318.51, start: 0.085, dur: 0.30, gain: 0.18 }
+        ];
+        for (const n of notes) {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(n.freq, now + n.start);
+          g.gain.setValueAtTime(0.0001, now + n.start);
+          g.gain.exponentialRampToValueAtTime(n.gain, now + n.start + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + n.start + n.dur);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(now + n.start);
+          osc.stop(now + n.start + n.dur + 0.02);
+        }
+        setTimeout(() => { ctx.close().catch(() => {}); }, 800);
+      };
+      if (ctx.state === 'running') {
+        triggerNotes();
+      } else {
+        ctx.resume().then(() => {
+          if (ctx.state === 'running') triggerNotes();
+          else if (!fromGesture) ctx.close().catch(() => {});
+        }).catch(() => { ctx.close().catch(() => {}); });
+        if (fromGesture) {
+          // Dentro de un gesto directo, resume() suele completar en microsegundos.
+          setTimeout(() => { if (!chimePlayed && ctx.state === 'running') triggerNotes(); }, 25);
+        }
+      }
+    } catch {}
+  };
+  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const bootVideo = document.getElementById('hp-boot-video');
+  if (!reduced && bootVideo) bootVideo.play().catch(() => {});
+  const chimeTimer = setTimeout(() => { if (!closed) playBrandCoinChime(false); }, reduced ? 80 : 750);
+  let timer;
+  const onBootKey = e => {
+    if (!closed && ['Enter', ' ', 'Escape'].includes(e.key)) { e.preventDefault(); skipNow(); }
+  };
+  const dismiss = () => {
+    if (closed) return;
+    closed = true;
+    clearTimeout(timer);
+    clearTimeout(chimeTimer);
+    window.removeEventListener('keydown', onBootKey);
+    sessionStorage.setItem('hp_boot_splash_done', '1');
+    bootVideo?.pause();
+    splash.classList.add('is-leaving');
+    setTimeout(() => { splash.hidden = true; splash.classList.remove('is-leaving'); }, reduced ? 120 : 480);
+  };
+  const skipNow = () => { playBrandCoinChime(true); dismiss(); };
+  timer = setTimeout(dismiss, reduced ? 1100 : 5000);
+  splash.addEventListener('pointerdown', skipNow, { once: true });
+  window.addEventListener('keydown', onBootKey);
+})();
+</script>
+</body></html>

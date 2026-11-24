@@ -1,0 +1,88 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+mcp_config.json
+.mcp.json
+.agents/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Standalone external graphical tools (Pixelorama & Tiled)
+herramientas/
+
+# --- Fase 10C4: prevención de residuos (solo exclusión del repositorio; no borra archivos) ---
+
+# Perfiles temporales de navegador (Chromium/Edge/Playwright)
+**/chrome_profile*/
+**/playwright_chromiumdev_profile-*/
+
+# Cachés regenerables
+.vite/
+.cache/
+
+# Respaldos locales históricos (no forman parte de la distribución)
+backups/
+
+# Salidas generadas por pruebas dentro de scratch/ (los scripts .cjs se conservan)
+scratch/**/*.png
+scratch/**/*.webm
+scratch/**/*.mp4
+
+# Adjuntos locales de Codex
+.codex-remote-attachments/
+
+# Residuos del sistema operativo
+Thumbs.db
+desktop.ini
+
+# Private local work and exported player data
+/scratch/
+/docs/
+/TRASPASO_ANTIGRAVITY.md
+/BENCHMARK_Y_MEJORAS_GAMEPLAY.md
+**/Hepato_Partida_*.json
+**/hepato-partida*.json
+**/[Pp]artida*.json
+**/[Ss]ave*.json
+**/[Pp]artidas/
+**/[Ss]aves/
+**/[Ss]avegames/
+*.sav
+*.save
+*.pem
+*.key
+*.p12
+*.pfx
+*.tmp
+*.bak
+
+# PixelLab export metadata (local identifiers)
+/assets/sprites/medica-pixel/metadata.json
+/assets/sprites/personajes/anciano-pixellab/metadata.json
+/assets/sprites/personajes/keivin/metadata.json
+/assets/sprites/personajes/medico-anciano-pixellab/metadata.json
+/assets/sprites/personajes/visitante/metadata.json
